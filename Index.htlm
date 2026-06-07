@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAYSERVE — Shopping Request Form</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #F5F0E6;
+    padding: 2rem;
+  }
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  }
+  h1 {
+    color: #1B5C6B;
+    margin-bottom: 0.5rem;
+  }
+  .subtitle {
+    color: #6B7A7D;
+    margin-bottom: 2rem;
+  }
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: #1E2A2E;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #D4D8D9;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+  }
+  textarea {
+    min-height: 150px;
+    resize: vertical;
+  }
+  .items-section {
+    background: #FDFBF7;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+  }
+  .item-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+  }
+  .item-row input {
+    flex: 1;
+    margin-bottom: 0;
+  }
+  .item-row input.qty {
+    width: 80px;
+    flex: none;
+  }
+  .btn-add {
+    background: #1B5C6B;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 40px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  .btn-submit {
+    background: #F5A52A;
+    color: white;
+    border: none;
+    padding: 1rem;
+    width: 100%;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  .btn-submit:hover {
+    background: #E08E12;
+  }
+  .btn-wa {
+    background: #25D366;
+    margin-top: 0.5rem;
+  }
+  .preview {
+    background: #1B5C6B;
+    color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    white-space: pre-wrap;
+    font-family: monospace;
+  }
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>🛒 STAYSERVE Shopping Request</h1>
+    <p class="subtitle">Tell us what you need — we'll deliver it to your door in Zanzibar</p>
+
+    <form id="requestForm">
+      <div class="form-group">
+        <label>Your Full Name *</label>
+        <input type="text" id="customerName" required placeholder="e.g., James Wilson">
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number (WhatsApp) *</label>
+        <input type="tel" id="customerPhone" required placeholder="e.g., 0712345678">
+      </div>
+
+      <div class="form-group">
+        <label>Delivery Address *</label>
+        <input type="text" id="deliveryAddress" required placeholder="Hotel name, street, landmark">
+      </div>
+
+      <div class="form-group">
+        <label>Preferred Delivery Time</label>
+        <select id="deliveryTime">
+          <option value="As soon as possible">⏱️ As soon as possible</option>
+          <option value="Within 1 hour">⚡ Within 1 hour (Express)</option>
+          <option value="Today evening">🌙 Today evening</option>
+          <option value="Tomorrow morning">☀️ Tomorrow morning</option>
+          <option value="Schedule later">📅 Schedule later (specify below)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Urgency Level</label>
+        <select id="urgency">
+          <option value="Normal">🟢 Normal (same day)</option>
+          <option value="Express">🟠 Express (within 2 hours, +3,000 TSh)</option>
+          <option value="Emergency">🔴 Emergency (within 1 hour, +5,000 TSh)</option>
+        </select>
+      </div>
+
+      <div class="items-section">
+        <label>📝 Items You Need *</label>
+        <div id="itemsContainer">
+          <div class="item-row">
+            <input type="text" class="item-name" placeholder="Item name (e.g., Rice 2kg)">
+            <input type="number" class="item-qty" placeholder="Qty" value="1" style="width:70px">
+          </div>
+        </div>
+        <button type="button" class="btn-add" onclick="addItemRow()">+ Add another item</button>
+      </div>
+
+      <div class="form-group">
+        <label>Special Instructions</label>
+        <textarea id="instructions" placeholder="e.g., No onions, call before arriving, gate code 1234..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Payment Method</label>
+        <select id="paymentMethod">
+          <option value="Cash on delivery">💰 Cash on delivery</option>
+          <option value="M-Pesa">📱 M-Pesa</option>
+          <option value="Tigo Pesa">📱 Tigo Pesa</option>
+          <option value="Wallet">💳 STAYSERVE Wallet</option>
+        </select>
+      </div>
+
+      <button type="button" class="btn-submit" onclick="generateAndSend()">
+        📤 Generate Request & Send to STAYSERVE
+      </button>
+      
+      <button type="button" class="btn-submit btn-wa" onclick="sendViaWhatsApp()">
+        💬 Send via WhatsApp Directly
+      </button>
+    </form>
+
+    <div id="previewArea" class="hidden"></div>
+  </div>
+</div>
+
+<script>
+  function addItemRow() {
+    const container = document.getElementById('itemsContainer');
+    const newRow = document.createElement('div');
+    newRow.className = 'item-row';
+    newRow.innerHTML = `
+      <input type="text" class="item-name" placeholder="Item name">
+      <input type="number" class="item-qty" placeholder="Qty" value="1" style="width:70px">
+      <button type="button" onclick="this.parentElement.remove()" style="background:#EF4444; color:white; border:none; border-radius:8px; width:30px; height:30px;">✕</button>
+    `;
+    container.appendChild(newRow);
+  }
+
+  function getRequestDocument() {
+    const customerName = document.getElementById('customerName').value || 'Not provided';
+    const customerPhone = document.getElementById('customerPhone').value || 'Not provided';
+    const deliveryAddress = document.getElementById('deliveryAddress').value || 'Not provided';
+    const deliveryTime = document.getElementById('deliveryTime').value;
+    const urgency = document.getElementById('urgency').value;
+    const instructions = document.getElementById('instructions').value || 'None';
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    
+    // Get all items
+    const itemRows = document.querySelectorAll('.item-row');
+    let itemsList = '';
+    let itemCount = 0;
+    itemRows.forEach((row, index) => {
+      const name = row.querySelector('.item-name').value;
+      const qty = row.querySelector('.item-qty').value;
+      if (name && name.trim() !== '') {
+        itemCount++;
+        itemsList += `${itemCount}. ${name} × ${qty}\n`;
+      }
+    });
+    
+    if (itemsList === '') {
+      itemsList = 'No items specified — will provide list via WhatsApp';
+    }
+    
+    const timestamp = new Date().toLocaleString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    const requestNumber = 'SRQ-' + Date.now().toString().slice(-8);
+    
+    // Create formatted document
+    const document = `
+╔══════════════════════════════════════════════════════════════╗
+║                    🛒 STAYSERVE ZANZIBAR                     ║
+║                   SHOPPING REQUEST FORM                      ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  REQUEST #: ${requestNumber}                                 ║
+║  DATE: ${timestamp}                                         ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                    👤 CUSTOMER DETAILS                       ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Name:        ${customerName.padEnd(40)}║
+║  Phone:       ${customerPhone.padEnd(40)}║
+║  Address:     ${deliveryAddress.substring(0,40).padEnd(40)}║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                    📦 ITEMS NEEDED                           ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+${itemsList.split('\n').map(line => '║  ' + line.padEnd(62) + '║').join('\n')}
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                    ⏰ DELIVERY DETAILS                       ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Preferred Time:   ${deliveryTime.padEnd(40)}║
+║  Urgency Level:    ${urgency.padEnd(40)}║
+║  Payment Method:   ${paymentMethod.padEnd(40)}║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                    📝 SPECIAL INSTRUCTIONS                   ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  ${instructions.substring(0,62).padEnd(62)}║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                    💰 PRICE ESTIMATE                         ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  Items subtotal:     To be calculated upon picking          ║
+║  Delivery fee:       2,000 - 5,000 TSh                      ║
+║  Express surcharge:  ${urgency === 'Express' ? '3,000 TSh' : urgency === 'Emergency' ? '5,000 TSh' : '0 TSh'}${' '.repeat(30)}║
+║  Service fee:        5% of subtotal                         ║
+║                                                              ║
+║  TOTAL:              Will be confirmed before delivery      ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  📞 STAYSERVE will contact you within 5 minutes to confirm  ║
+║                                                              ║
+║  Thank you for choosing STAYSERVE!                          ║
+║  +255 671 215 640  |  @stayserve_tour_safari                ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+    `;
+    
+    return { document, requestNumber, itemsList, customerName, customerPhone, deliveryAddress };
+  }
+
+  function generateAndSend() {
+    // Validate required fields
+    const name = document.getElementById('customerName').value.trim();
+    const phone = document.getElementById('customerPhone').value.trim();
+    const address = document.getElementById('deliveryAddress').value.trim();
+    
+    if (!name || !phone || !address) {
+      alert('Please fill in your name, phone number, and delivery address');
+      return;
+    }
+    
+    const { document, requestNumber, itemsList, customerName, customerPhone, deliveryAddress } = getRequestDocument();
+    
+    // Show preview
+    const previewArea = document.getElementById('previewArea');
+    previewArea.innerHTML = `<div class="preview">${document.replace(/\n/g, '<br>')}</div>`;
+    previewArea.classList.remove('hidden');
+    
+    // Create downloadable text file
+    const blob = new Blob([document], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `STAYSERVE_Request_${requestNumber}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    // Also prepare WhatsApp message
+    const waMessage = `🛒 *NEW SHOPPING REQUEST* 🛒
+    
+*Request #:* ${requestNumber}
+*Customer:* ${customerName}
+*Phone:* ${customerPhone}
+*Address:* ${deliveryAddress}
+
+*ITEMS NEEDED:*
+${itemsList}
+
+*Delivery Time:* ${document.getElementById('deliveryTime').value}
+*Urgency:* ${document.getElementById('urgency').value}
+*Payment:* ${document.getElementById('paymentMethod').value}
+*Instructions:* ${document.getElementById('instructions').value || 'None'}
+
+Please confirm availability and total price. Thank you!`;
+
+    if (confirm('Request generated! Would you like to send it via WhatsApp now?')) {
+      window.open(`https://wa.me/255671215640?text=${encodeURIComponent(waMessage)}`, '_blank');
+    }
+    
+    alert(`✅ Request ${requestNumber} created!\n\nDocument downloaded as text file.\nYou can also copy and paste the document to send.`);
+  }
+
+  function sendViaWhatsApp() {
+    const name = document.getElementById('customerName').value.trim();
+    const phone = document.getElementById('customerPhone').value.trim();
+    const address = document.getElementById('deliveryAddress').value.trim();
+    
+    if (!name || !phone || !address) {
+      alert('Please fill in your name, phone number, and delivery address');
+      return;
+    }
+    
+    const { document, requestNumber, itemsList, customerName, customerPhone, deliveryAddress } = getRequestDocument();
+    
+    const waMessage = `🛒 *NEW SHOPPING REQUEST* 🛒
+    
+*Request #:* ${requestNumber}
+*Customer:* ${customerName}
+*Phone:* ${customerPhone}
+*Address:* ${deliveryAddress}
+
+*ITEMS NEEDED:*
+${itemsList}
+
+*Delivery Time:* ${document.getElementById('deliveryTime').value}
+*Urgency:* ${document.getElementById('urgency').value}
+*Payment:* ${document.getElementById('paymentMethod').value}
+*Instructions:* ${document.getElementById('instructions').value || 'None'}
+
+━━━━━━━━━━━━━━━━━━━━━
+*Full Request Document Below:*
+━━━━━━━━━━━━━━━━━━━━━
+
+${document.substring(0, 1500)}`;
+
+    window.open(`https://wa.me/255671215640?text=${encodeURIComponent(waMessage)}`, '_blank');
+  }
+</script>
+</body>
+</html>
